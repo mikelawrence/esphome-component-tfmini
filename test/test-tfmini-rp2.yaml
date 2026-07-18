@@ -9,10 +9,7 @@ rp2:
   board: rpipicow
 
 external_components:
-  source:
-    type: git
-    url: https://github.com/mikelawrence/esphome-components-tfmini
-    ref: ${ref}
+  - source: github://mikelawrence/esphome-component-tfmini@{ref}
 
 uart:
   - id: tfmini_uart
