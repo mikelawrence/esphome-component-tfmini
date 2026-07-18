@@ -1,0 +1,42 @@
+substitutions:
+  ref: main
+
+esphome:
+  name: test-tfmini-rp2
+  friendly_name: Test TFMini Component with RP2
+
+rp2:
+  board: rpipicow
+
+external_components:
+  source:
+    type: git
+    url: https://github.com/mikelawrence/esphome-components-tfmini
+    ref: ${ref}
+
+uart:
+  - id: tfmini_uart
+    tx_pin: GPIO25
+    rx_pin: GPIO24
+    baud_rate: 115200
+    data_bits: 8
+    parity: NONE
+    stop_bits: 1
+
+sensor:
+  - platform: tfmini
+    model: TFMINI_PLUS
+    sample_rate: 10
+    temperature:
+      id: tfmini_temperature
+      name: "Temperature"
+    distance:
+      id: tfmini_distance
+      internal: true
+      name: "TFMini Distance"
+      accuracy_decimals: 1
+    signal_strength:
+      id: tfmini_signal_strength
+      name: "TFMini Signal Strength"
+      filters:
+        - throttle: 1s

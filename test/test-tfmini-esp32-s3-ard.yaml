@@ -1,0 +1,46 @@
+substitutions:
+  ref: main
+
+esphome:
+  name: test-tfmini-esp32-s3-ard
+  friendly_name: Test TFMini Component with ESP32-S3 and Arduino Framework
+
+esp32:
+  variant: ESP32S3
+  flash_size: 16MB
+  cpu_frequency: 240MHz
+  framework:
+    type: arduino
+
+external_components:
+  source:
+    type: git
+    url: https://github.com/mikelawrence/esphome-components-tfmini
+    ref: ${ref}
+
+uart:
+  - id: tfmini_uart
+    tx_pin: GPIO48
+    rx_pin: GPIO47
+    baud_rate: 115200
+    data_bits: 8
+    parity: NONE
+    stop_bits: 1
+
+sensor:
+  - platform: tfmini
+    model: TFMINI_PLUS
+    sample_rate: 10
+    temperature:
+      id: tfmini_temperature
+      name: "Temperature"
+    distance:
+      id: tfmini_distance
+      internal: true
+      name: "TFMini Distance"
+      accuracy_decimals: 1
+    signal_strength:
+      id: tfmini_signal_strength
+      name: "TFMini Signal Strength"
+      filters:
+        - throttle: 1s
