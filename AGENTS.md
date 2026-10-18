@@ -1054,3 +1054,29 @@ Function and method comment blocks may include more detail as required to make
 calling contracts clear and document parameter usage, but should still be kept concise.
 
 Avoid redundancy and repetition; comments should never simply restate what the code already says.
+
+## 11. Local ESPHome Builds with Docker
+
+Use Docker Desktop on Windows to run the repository's ESPHome build matrix. Do not install ESPHome or its
+firmware toolchains directly on the host for these checks.
+
+Before building, check that Docker Desktop is running with `docker info`. Check whether the required
+`ghcr.io/esphome/esphome:stable` and `ghcr.io/esphome/esphome:dev` images exist with `docker image inspect`.
+Reuse images that are already present; pull an image only when it is missing. The `--pull=missing` option on
+`docker run` follows this rule automatically.
+
+Mount the test configuration directory at `/config` and a named Docker volume at `/config/.esphome`. The named
+volume preserves ESPHome's downloaded frameworks, compilers, and build cache between container runs, while
+`--rm` removes each short-lived build container. Example:
+
+```powershell
+docker run --rm --pull=missing `
+  -v "C:\path\to\test-configs:/config" `
+  -v esphome-build-cache:/config/.esphome `
+  ghcr.io/esphome/esphome:dev compile /config/test-tfmini-esp32-s3-idf.yaml
+```
+
+For the full CI-equivalent matrix, compile each YAML in `test/` with both the `stable` and `dev` tags:
+`test-tfmini-esp32-s3-idf.yaml`, `test-tfmini-esp32-s3-ard.yaml`, and `test-tfmini-rp2.yaml`. When validating
+unmerged changes, use temporary copies of the YAML files with the `ref` substitution set to the branch or commit
+being tested; do not edit the tracked test files just to select a component revision.
