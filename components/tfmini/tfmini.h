@@ -45,7 +45,8 @@ class TFminiComponent : public uart::UARTDevice, public Component {
   // void set_signal_strength_sensor(sensor::Sensor *signal_strength_sensor) {
   //   this->signal_strength_sensor_ = signal_strength_sensor;
   // };
-  // void set_temperature_sensor(sensor::Sensor *temperature_sensor) { this->temperature_sensor_ = temperature_sensor; };
+  // void set_temperature_sensor(sensor::Sensor *temperature_sensor) { this->temperature_sensor_ = temperature_sensor;
+  // };
   void set_low_power_mode(uint32_t mode) { this->low_power_ = mode; };
 
   // ========== INTERNAL METHODS ==========
