@@ -13,7 +13,7 @@ esp32:
     type: esp-idf
 
 external_components:
-  - source: github://mikelawrence/esphome-component-tfmini@{ref}
+  - source: github://mikelawrence/esphome-component-tfmini@${ref}
 
 uart:
   - id: tfmini_uart
