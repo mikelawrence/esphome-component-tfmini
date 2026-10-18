@@ -4,7 +4,7 @@
 
 namespace esphome {
 namespace tfmini {
-static const char *const TAG = "tfmini";
+ESPHOME_LOG_TAG(TAG, "tfmini");
 
 static const char *model_to_str(TFminiModel model) {
   switch (model) {
