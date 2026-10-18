@@ -1,4 +1,8 @@
-# Local ESPHome Component Build Checks
+# AI Colaboration
+
+Include this file first https://github.com/esphome/esphome/blob/dev/AGENTS.md while keeping the instructions below.
+
+## Local ESPHome Component Build Checks
 
 Run ESPHome component builds through the Windows Docker Desktop CLI (`docker.exe`), not from a WSL shell.
 
