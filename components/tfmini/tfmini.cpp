@@ -253,6 +253,7 @@ void TFminiComponent::process_response_frame() {
 
 void TFminiComponent::send_command_(uint8_t cmd) {
   uint16_t value;
+  char packet_str[PACKET_STR_BUFFER_SIZE];
 
   this->tx_buffer_.clear();
   switch (cmd) {
@@ -262,7 +263,8 @@ void TFminiComponent::send_command_(uint8_t cmd) {
       this->tx_buffer_.push_back(TFMINI_CMD_FW_VERSION);
       this->comp_cs_send_command_();
       this->version_received_ = false;
-      ESP_LOGV(TAG, "Sent Get Firmware Version command. %s", this->tx_packet_to_str_().c_str());
+      this->tx_packet_to_str_(packet_str);
+      ESP_LOGV(TAG, "Sent Get Firmware Version command. %s", packet_str);
       break;
 
     case TFMINI_CMD_SOFT_RESET:
@@ -271,7 +273,8 @@ void TFminiComponent::send_command_(uint8_t cmd) {
       this->tx_buffer_.push_back(TFMINI_CMD_SOFT_RESET);
       this->comp_cs_send_command_();
       this->soft_reset_received_ = false;
-      ESP_LOGV(TAG, "Sent Soft Reset command. %s", this->tx_packet_to_str_().c_str());
+      this->tx_packet_to_str_(packet_str);
+      ESP_LOGV(TAG, "Sent Soft Reset command. %s", packet_str);
       break;
 
     case TFMINI_CMD_SAMPLE_RATE:
@@ -283,7 +286,8 @@ void TFminiComponent::send_command_(uint8_t cmd) {
       this->tx_buffer_.push_back((value >> 8) & 0xFF);  // Sample Rate high byte
       this->comp_cs_send_command_();
       this->sample_rate_received_ = false;
-      ESP_LOGV(TAG, "Sent Set Sample Rate command. Sample Rate = %u. %s", value, this->tx_packet_to_str_().c_str());
+      this->tx_packet_to_str_(packet_str);
+      ESP_LOGV(TAG, "Sent Set Sample Rate command. Sample Rate = %u. %s", value, packet_str);
       break;
 
     case TFMINI_CMD_TRIGGER:
@@ -291,7 +295,8 @@ void TFminiComponent::send_command_(uint8_t cmd) {
       this->tx_buffer_.push_back(0x04);  // This command is 4 bytes long
       this->tx_buffer_.push_back(TFMINI_CMD_TRIGGER);
       this->comp_cs_send_command_();
-      ESP_LOGV(TAG, "Sent Trigger Detection command. %s", this->tx_packet_to_str_().c_str());
+      this->tx_packet_to_str_(packet_str);
+      ESP_LOGV(TAG, "Sent Trigger Detection command. %s", packet_str);
       break;
 
     case TFMINI_CMD_LOW_POWER:
@@ -307,8 +312,9 @@ void TFminiComponent::send_command_(uint8_t cmd) {
       this->tx_buffer_.push_back(0x00);   // always 0x00
       this->comp_cs_send_command_();
       this->low_power_received_ = false;
+      this->tx_packet_to_str_(packet_str);
       ESP_LOGV(TAG, "Sent Low Power command. Low Power Mode = %s. %s", this->low_power_ ? "Enabled" : "Disabled",
-               this->tx_packet_to_str_().c_str());
+               packet_str);
       break;
   }
   this->cmd_time_ = millis();
@@ -340,26 +346,34 @@ bool TFminiComponent::verify_rx_packet_checksum_() {
   return false;
 }
 
-std::string TFminiComponent::rx_packet_to_str_() {
-  uint8_t length = this->rx_buffer_.size();
-  std::string packet_str = "Packet <- ";
+void TFminiComponent::rx_packet_to_str_(char (&buffer)[PACKET_STR_BUFFER_SIZE]) {
+  char *output = buffer;
+  const char prefix[] = "Packet <- ";
+  for (size_t i = 0; i < sizeof(prefix) - 1; i++)
+    *output++ = prefix[i];
 
-  for (uint8_t i = 0; i < length - 1; i++) {
-    packet_str += format_hex(this->rx_buffer_[i]) + ' ';
+  for (size_t i = 0; i < this->rx_buffer_.size(); i++) {
+    if (i > 0)
+      *output++ = ' ';
+    format_hex_to(output, 3, &this->rx_buffer_[i], 1);
+    output += 2;
   }
-  packet_str += format_hex(this->rx_buffer_[length - 1]);
-  return packet_str;
+  *output = '\0';
 }
 
-std::string TFminiComponent::tx_packet_to_str_() {
-  uint8_t length = this->tx_buffer_.size();
-  std::string packet_str = "Packet -> ";
+void TFminiComponent::tx_packet_to_str_(char (&buffer)[PACKET_STR_BUFFER_SIZE]) {
+  char *output = buffer;
+  const char prefix[] = "Packet -> ";
+  for (size_t i = 0; i < sizeof(prefix) - 1; i++)
+    *output++ = prefix[i];
 
-  for (uint8_t i = 0; i < length - 1; i++) {
-    packet_str += format_hex(this->tx_buffer_[i]) + ' ';
+  for (size_t i = 0; i < this->tx_buffer_.size(); i++) {
+    if (i > 0)
+      *output++ = ' ';
+    format_hex_to(output, 3, &this->tx_buffer_[i], 1);
+    output += 2;
   }
-  packet_str += format_hex(this->tx_buffer_[length - 1]);
-  return packet_str;
+  *output = '\0';
 }
 
 }  // namespace tfmini
