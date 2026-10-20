@@ -11,6 +11,9 @@ rp2:
 external_components:
   - source: github://mikelawrence/esphome-component-tfmini@{ref}
 
+logger:
+  level: VERY_VERBOSE
+
 uart:
   - id: tfmini_uart
     tx_pin: GPIO25
