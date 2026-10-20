@@ -1,4 +1,4 @@
-# AI Colaboration
+# AI Collaboration
 
 Include this file first https://github.com/esphome/esphome/blob/dev/AGENTS.md while keeping the instructions below.
 
