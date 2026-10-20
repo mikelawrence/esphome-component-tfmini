@@ -1,8 +1,5 @@
 #pragma once
 
-#include <cstddef>
-#include <vector>
-
 #include "esphome/core/component.h"
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/components/uart/uart.h"
@@ -30,7 +27,8 @@ enum TFminiCmd {
 
 class TFminiComponent : public uart::UARTDevice, public Component {
  public:
-  static constexpr size_t PACKET_STR_BUFFER_SIZE = 37;
+  static constexpr std::size_t MAX_PACKET_LENGTH = 9;
+  static constexpr std::size_t PACKET_STR_BUFFER_SIZE = sizeof("Packet <- ") + 3 * MAX_PACKET_LENGTH - 1;
 
 #ifdef USE_SENSOR
   SUB_SENSOR(distance)
@@ -78,8 +76,7 @@ class TFminiComponent : public uart::UARTDevice, public Component {
 
   // Methods
   bool verify_rx_packet_checksum_();
-  void rx_packet_to_str_(char (&buffer)[PACKET_STR_BUFFER_SIZE]);
-  void tx_packet_to_str_(char (&buffer)[PACKET_STR_BUFFER_SIZE]);
+  char *packet_to_str_(const std::vector<uint8_t> &packet, const char *prefix, char (&buffer)[PACKET_STR_BUFFER_SIZE]);
   void process_rx_data();
   void process_data_frame();
   void process_response_frame();
