@@ -4,7 +4,12 @@
 
 namespace esphome {
 namespace tfmini {
+
+#if ESPHOME_VERSION_CODE >= VERSION_CODE(2026, 10, 0)
 ESPHOME_LOG_TAG(TAG, "tfmini");
+#else
+static const char *const TAG = "tfmini";
+#endif
 
 static const char *model_to_str(TFminiModel model) {
   switch (model) {
