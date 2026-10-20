@@ -1,7 +1,5 @@
 #pragma once
 
-#include <vector>
-
 #include "esphome/core/component.h"
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/components/uart/uart.h"
@@ -29,6 +27,9 @@ enum TFminiCmd {
 
 class TFminiComponent : public uart::UARTDevice, public Component {
  public:
+  static constexpr std::size_t MAX_PACKET_LENGTH = 9;
+  static constexpr std::size_t PACKET_STR_BUFFER_SIZE = sizeof("Packet <- ") + 3 * MAX_PACKET_LENGTH - 1;
+
 #ifdef USE_SENSOR
   SUB_SENSOR(distance)
   SUB_SENSOR(signal_strength)
@@ -42,7 +43,8 @@ class TFminiComponent : public uart::UARTDevice, public Component {
   // void set_signal_strength_sensor(sensor::Sensor *signal_strength_sensor) {
   //   this->signal_strength_sensor_ = signal_strength_sensor;
   // };
-  // void set_temperature_sensor(sensor::Sensor *temperature_sensor) { this->temperature_sensor_ = temperature_sensor; };
+  // void set_temperature_sensor(sensor::Sensor *temperature_sensor) { this->temperature_sensor_ = temperature_sensor;
+  // };
   void set_low_power_mode(uint32_t mode) { this->low_power_ = mode; };
 
   // ========== INTERNAL METHODS ==========
@@ -74,8 +76,7 @@ class TFminiComponent : public uart::UARTDevice, public Component {
 
   // Methods
   bool verify_rx_packet_checksum_();
-  std::string rx_packet_to_str_();
-  std::string tx_packet_to_str_();
+  char *packet_to_str_(const std::vector<uint8_t> &packet, const char *prefix, char (&buffer)[PACKET_STR_BUFFER_SIZE]);
   void process_rx_data();
   void process_data_frame();
   void process_response_frame();
