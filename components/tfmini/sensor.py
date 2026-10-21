@@ -125,8 +125,7 @@ async def to_code(config):
     cg.add(var.set_model(config[CONF_MODEL]))
     cg.add(var.set_distance_sensor(await sensor.new_sensor(config[CONF_DISTANCE])))
 
-    if CONF_SAMPLE_RATE in config:
-        cg.add(var.set_sample_rate(config[CONF_SAMPLE_RATE]))
+    cg.add_optional(var.set_sample_rate, config.get(CONF_SAMPLE_RATE))
     if CONF_CONFIG_PIN in config:
         cg.add(
             var.set_config_pin(await cg.gpio_pin_expression(config[CONF_CONFIG_PIN]))
@@ -143,5 +142,4 @@ async def to_code(config):
                 await sensor.new_sensor(config[CONF_TEMPERATURE])
             )
         )
-    if CONF_LOW_POWER in config:
-        cg.add(var.set_low_power_mode(config[CONF_LOW_POWER]))
+    cg.add_optional(var.set_low_power_mode, config.get(CONF_LOW_POWER))
