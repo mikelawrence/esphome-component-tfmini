@@ -4,8 +4,7 @@
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/components/uart/uart.h"
 
-namespace esphome {
-namespace tfmini {
+namespace esphome::tfmini {
 enum TFminiModel {
   TFMINI_MODEL_TFMINI_S = 0,
   TFMINI_MODEL_TFMINI_PLUS,
@@ -87,5 +86,4 @@ class TFminiComponent : public uart::UARTDevice, public Component {
   GPIOPin *config_pin_{nullptr};
 };
 
-}  // namespace tfmini
-}  // namespace esphome
+}  // namespace esphome::tfmini
