@@ -40,4 +40,3 @@ sensor:
       name: "TFMini Signal Strength"
       filters:
         - throttle: 1s
- 

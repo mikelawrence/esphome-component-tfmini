@@ -3,8 +3,7 @@
 #include "esphome/core/helpers.h"
 #include "esphome/core/log.h"
 
-namespace esphome {
-namespace tfmini {
+namespace esphome::tfmini {
 static const char *const TAG = "tfmini";
 
 static const char *model_to_str(TFminiModel model) {
@@ -93,7 +92,7 @@ void TFminiComponent::dump_config() {
                 LOG_STR_ARG(model_to_str(this->model_)), this->firmware_version_.c_str(), this->sample_rate_);
   LOG_PIN("  CONFIG Pin: ", this->config_pin_);
   if (this->model_ != TFMINI_MODEL_TFMINI_PLUS)
-    ESP_LOGCONFIG(TAG, "  Low Power Mode: %s", this->low_power_ ? "True" : "False");
+    ESP_LOGCONFIG(TAG, "  Low Power Mode: %s", TRUEFALSE(this->low_power_));
 #ifdef USE_SENSOR
   LOG_SENSOR("  ", "Distance:", this->distance_sensor_);
   LOG_SENSOR("  ", "Signal Strength:", this->signal_strength_sensor_);
@@ -368,5 +367,4 @@ char *TFminiComponent::packet_to_str_(const std::vector<uint8_t> &packet, const 
   return buffer;
 }
 
-}  // namespace tfmini
-}  // namespace esphome
+}  // namespace esphome::tfmini
