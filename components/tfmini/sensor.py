@@ -1,9 +1,7 @@
-import esphome.codegen as cg
 from esphome import pins
-from esphome.components import sensor, text_sensor, uart
+import esphome.codegen as cg
+from esphome.components import sensor, uart
 import esphome.config_validation as cv
-from esphome.core import TimePeriod, TimePeriodSeconds
-
 from esphome.const import (
     # CONF_DIRECTION,
     CONF_DISTANCE,
@@ -12,14 +10,11 @@ from esphome.const import (
     CONF_SAMPLE_RATE,
     CONF_SIGNAL_STRENGTH,
     CONF_TEMPERATURE,
-    CONF_VERSION,
     DEVICE_CLASS_DISTANCE,
     DEVICE_CLASS_SIGNAL_STRENGTH,
     DEVICE_CLASS_TEMPERATURE,
-    ENTITY_CATEGORY_DIAGNOSTIC,
     ICON_ARROW_EXPAND_VERTICAL,
     # ICON_ACCELERATION,
-    ICON_CHIP,
     ICON_SIGNAL,
     ICON_THERMOMETER,
     # ICON_RESTART,
@@ -83,29 +78,24 @@ CONFIG_SCHEMA = cv.Schema(
 
 
 def final_validate(config):
-    if config[CONF_LOW_POWER] == True:
+    if config[CONF_LOW_POWER] is True:
         if config[CONF_MODEL] == MODEL_TFMINI_PLUS:
             raise cv.Invalid(
                 "Model" + MODEL_TFMINI_PLUS + " does not support Low Power Mode."
             )
-        else:
-            if config[CONF_SAMPLE_RATE] > 10:
-                raise cv.Invalid(
-                    "Model"
-                    + config[CONF_MODEL]
-                    + " in Low Power Mode Sample Rate must be at most 10."
-                )
-    else:
-        if config[CONF_MODEL] == MODEL_TF_LUNA:
-            if config[CONF_SAMPLE_RATE] > 500:
-                raise cv.Invalid(
-                    "Model" + MODEL_TF_LUNA + " Sample Rate must be at most 500."
-                )
-    if CONF_CONFIG_PIN in config:
-        if config[CONF_MODEL] != MODEL_TF_LUNA:
+        if config[CONF_SAMPLE_RATE] > 10:
             raise cv.Invalid(
-                "Model" + config[CONF_MODEL] + " does not have a CONFIG pin."
+                "Model"
+                + config[CONF_MODEL]
+                + " in Low Power Mode Sample Rate must be at most 10."
             )
+    elif config[CONF_MODEL] == MODEL_TF_LUNA:
+        if config[CONF_SAMPLE_RATE] > 500:
+            raise cv.Invalid(
+                "Model" + MODEL_TF_LUNA + " Sample Rate must be at most 500."
+            )
+    if CONF_CONFIG_PIN in config and config[CONF_MODEL] != MODEL_TF_LUNA:
+        raise cv.Invalid("Model" + config[CONF_MODEL] + " does not have a CONFIG pin.")
 
     schema = uart.final_validate_device_schema(
         "tfmini",

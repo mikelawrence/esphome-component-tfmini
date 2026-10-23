@@ -13,7 +13,10 @@ esp32:
     type: arduino
 
 external_components:
-  - source: github://mikelawrence/esphome-component-tfmini@{ref}
+  - source: github://mikelawrence/esphome-component-tfmini@${ref}
+
+logger:
+  level: VERY_VERBOSE
 
 logger:
   level: VERY_VERBOSE

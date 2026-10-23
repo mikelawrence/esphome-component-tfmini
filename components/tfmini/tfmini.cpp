@@ -2,10 +2,14 @@
 
 #include "esphome/core/helpers.h"
 #include "esphome/core/log.h"
+#include "esphome/core/version.h"
 
-namespace esphome {
-namespace tfmini {
+namespace esphome::tfmini {
+#if ESPHOME_VERSION_CODE >= VERSION_CODE(2026, 10, 0)
+ESPHOME_LOG_TAG(TAG, "tfmini");
+#else
 static const char *const TAG = "tfmini";
+#endif
 
 static const char *model_to_str(TFminiModel model) {
   switch (model) {
@@ -93,7 +97,7 @@ void TFminiComponent::dump_config() {
                 LOG_STR_ARG(model_to_str(this->model_)), this->firmware_version_.c_str(), this->sample_rate_);
   LOG_PIN("  CONFIG Pin: ", this->config_pin_);
   if (this->model_ != TFMINI_MODEL_TFMINI_PLUS)
-    ESP_LOGCONFIG(TAG, "  Low Power Mode: %s", this->low_power_ ? "True" : "False");
+    ESP_LOGCONFIG(TAG, "  Low Power Mode: %s", TRUEFALSE(this->low_power_));
 #ifdef USE_SENSOR
   LOG_SENSOR("  ", "Distance:", this->distance_sensor_);
   LOG_SENSOR("  ", "Signal Strength:", this->signal_strength_sensor_);
@@ -368,5 +372,4 @@ char *TFminiComponent::packet_to_str_(const std::vector<uint8_t> &packet, const 
   return buffer;
 }
 
-}  // namespace tfmini
-}  // namespace esphome
+}  // namespace esphome::tfmini
