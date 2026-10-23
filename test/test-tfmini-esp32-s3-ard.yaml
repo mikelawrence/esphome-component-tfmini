@@ -18,9 +18,6 @@ external_components:
 logger:
   level: VERY_VERBOSE
 
-logger:
-  level: VERY_VERBOSE
-
 uart:
   - id: tfmini_uart
     tx_pin: GPIO48
