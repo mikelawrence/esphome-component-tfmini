@@ -115,31 +115,27 @@ FINAL_VALIDATE_SCHEMA = final_validate
 
 
 async def to_code(config):
+    # todo: remove this when we drop support for ESPHome < 2026.11.0
     if cv.Version.parse(__version__) >= cv.Version(2026, 11, 0):
         var = await uart.new_uart_component(config)
+        cg.add_optional(var.set_sample_rate, config.get(CONF_SAMPLE_RATE))
+        cg.add_optional(var.set_low_power_mode, config.get(CONF_LOW_POWER))
+        cg.add_pin(var.set_config_pin, config, CONF_CONFIG_PIN)
     else:
         var = cg.new_Pvariable(config[CONF_ID])
         await cg.register_component(var, config)
         await uart.register_uart_device(var, config)
+        if sample_rate := config.get(CONF_SAMPLE_RATE):
+            cg.add(var.set_sample_rate(sample_rate))
+        if low_power := config.get(CONF_LOW_POWER):
+            cg.add(var.set_low_power_mode(low_power))
+        if config_pin := config.get(CONF_CONFIG_PIN):
+            cg.add(var.set_config_pin(await cg.gpio_pin_expression(config_pin)))
 
     cg.add(var.set_model(config[CONF_MODEL]))
     cg.add(var.set_distance_sensor(await sensor.new_sensor(config[CONF_DISTANCE])))
 
-    cg.add_optional(var.set_sample_rate, config.get(CONF_SAMPLE_RATE))
-    if CONF_CONFIG_PIN in config:
-        cg.add(
-            var.set_config_pin(await cg.gpio_pin_expression(config[CONF_CONFIG_PIN]))
-        )
-    if CONF_SIGNAL_STRENGTH in config:
-        cg.add(
-            var.set_signal_strength_sensor(
-                await sensor.new_sensor(config[CONF_SIGNAL_STRENGTH])
-            )
-        )
-    if CONF_TEMPERATURE in config:
-        cg.add(
-            var.set_temperature_sensor(
-                await sensor.new_sensor(config[CONF_TEMPERATURE])
-            )
-        )
-    cg.add_optional(var.set_low_power_mode, config.get(CONF_LOW_POWER))
+    if signal_strength := config.get(CONF_SIGNAL_STRENGTH):
+        cg.add(var.set_signal_strength_sensor(await sensor.new_sensor(signal_strength)))
+    if temperature := config.get(CONF_TEMPERATURE):
+        cg.add(var.set_temperature_sensor(await sensor.new_sensor(temperature)))
