@@ -21,6 +21,7 @@ from esphome.const import (
     STATE_CLASS_MEASUREMENT,
     UNIT_CELSIUS,
     UNIT_CENTIMETER,
+    __version__,
 )
 
 CODEOWNERS = ["@mikelawrence"]
@@ -114,9 +115,12 @@ FINAL_VALIDATE_SCHEMA = final_validate
 
 
 async def to_code(config):
-    var = cg.new_Pvariable(config[CONF_ID])
-    await cg.register_component(var, config)
-    await uart.register_uart_device(var, config)
+    if cv.Version.parse(__version__) >= cv.Version(2026, 11, 0):
+        var = await uart.new_uart_component(config)
+    else:
+        var = cg.new_Pvariable(config[CONF_ID])
+        await cg.register_component(var, config)
+        await uart.register_uart_device(var, config)
 
     cg.add(var.set_model(config[CONF_MODEL]))
     cg.add(var.set_distance_sensor(await sensor.new_sensor(config[CONF_DISTANCE])))
