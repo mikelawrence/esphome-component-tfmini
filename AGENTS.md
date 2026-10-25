@@ -2,29 +2,18 @@
 
 First read the [ESPHome AI Collaboration Guide](https://github.com/esphome/esphome/blob/dev/AGENTS.md), then follow these repository-specific instructions.
 
+- This repository does not have a dev branch use main instead
+- Pull Requests should use this repository's .github/PULL_REQUEST_TEMPLATE.md
+- Pull Requests do not have any limit on size.
+
+
 ## Pull Requests
 
-### Description
+Follow the guidelines in section 7 of the document above but make the following changes.
 
-```markdown
-Use a format similar to this...
-
-# What does this implement/fix?
-
-Describe the changes.
-
-## Types of changes
-
-- [] Code quality improvements to existing code
-- [] Bugfix
-- [] New feature
-- [] Breaking change
-
-## Tests
-
-- [] Linting/Validation
-- [] Local Builds
-```
+    7. Specific Instructions for AI Collaboration
+        - Contribution Workflow (Pull Request Process):
+            vi. Pull Request: Submit a PR against the main branch. (always use git checkout -b <branch-name> main to ensure you're branching from main, not the currently checked out branch).
 
 ## Local Builds and testing
 
