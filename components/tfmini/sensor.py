@@ -120,7 +120,7 @@ async def to_code(config):
         var = await uart.new_uart_component(config)
         cg.add_optional(var.set_sample_rate, config.get(CONF_SAMPLE_RATE))
         cg.add_optional(var.set_low_power_mode, config.get(CONF_LOW_POWER))
-        cg.add_pin(var.set_config_pin, config, CONF_CONFIG_PIN)
+        cg.add_pin(var.set_config_pin, config.get(CONF_CONFIG_PIN))
     else:
         var = cg.new_Pvariable(config[CONF_ID])
         await cg.register_component(var, config)
