@@ -13,27 +13,40 @@ TFMini Plus|TFMini-S| TFLuna
 external_components:
   - source:
       type: git
-      url: https://github.com/mikelawrence/esphome-components-tfmini
+      url: https://github.com/mikelawrence/esphome-component-tfmini
 
 uart:
   - id: tfmini_uart
-    tx_pin: GPIO25
-    rx_pin: GPIO24
+    tx_pin: GPIO17
+    rx_pin: GPIO18
     baud_rate: 115200
     data_bits: 8
     parity: NONE
     stop_bits: 1
+
+sensor:
+  - platform: tfmini
+    uart_id: tfmini_uart
+    model: TFMINI_S
+    distance:
+      name: "TFMini Distance"
+    signal_strength:
+      name: "TFMini Signal Strength"
 ```
 
-## Configuration Variables
+## Component
+
+The UART bus must provide both TX and RX pins and use 115200 baud, 8 data bits, no parity, and one stop bit.
+
+### Configuration Variables
 
 * **model** (**Required**, enum): The model of the range finder sensor. Options are `TFMINI_PLUS`, `TFMINI_S` or `TF_LUNA`.
 * **uart_id** (*Optional*, [ID](https://esphome.io/guides/configuration-types/#id)): Manually specify the ID of the [UART Bus](https://esphome.io/components/uart) if you use multiple UART buses.
 * **sample_rate** (*Optional*, integer): The frame rate at which the sensor will output sensor data in samples per second. For the TFMINI_PLUS and TFMINI_S the range is 1-1000. For the TF_LUNA the range is 1-500. When low-power mode is enabled for the TFMINI_S or TF_LUNA, the rate must be 10 or less. Default is 100.
-* **config_pin** (*Optional*, [Pin Schema](https://esphome.io/guides/configuration-types#config-pin-schema)): This pin when connected will be set high to enable UART mode. (*TF_LUNA only*)
-* **low_power** (*Optional*, boolean): Turns on low-power mode. This requires `sample_rate` to be 10 or less and is supported only by `TFMINI_S` and `TF_LUNA`.
+* **config_pin** (*Optional*, internal GPIO output pin): This pin is set high to enable UART mode. Only valid for `TF_LUNA`.
+* **low_power** (*Optional*, boolean): Turns on low-power mode. This requires `sample_rate` to be 10 or less and is supported only by `TFMINI_S` and `TF_LUNA`. Defaults to `false`.
 
-## Sensors
+## Sensor
 
 ```yaml
 # Sample configuration entry example
@@ -60,8 +73,9 @@ sensor:
 
 ### Configuration Variables
 
-* **distance** (*Required*): Distance in cm. For the TFMINI_PLUS and TFMINI_S the range is 10-1200cm. For the TF_LUNA the range is 20-800cm. A distance of 10000cm means the sensor is not receiving enough signal, most likely open air. A distance of 0cm means the sensor is saturated and there is no measurement possible. All Options from [Sensor](https://esphome.io/components/sensor/#config-sensor).
-* **signal_strength** (*Optional*): Represents the signal strength with a range of 0-65535. The longer the measurement distance, the lower signal strength will be. The lower the reflectivity is, the lower the signal strength will be. When signal strength is less than 100 detection is unreliable and distance is set to 10000cm. When signal strength is 65535 detection is unreliable and distance is set to 0cm. All Options from [Sensor](https://esphome.io/components/sensor/#config-sensor).
+* **distance** (*Required*): Distance in cm. For the TFMINI_PLUS and TFMINI_S the range is 10-1200cm. For the TF_LUNA the range is 20-800cm. The component publishes an unavailable (`NaN`) distance if signal strength is below 100 or equals 65535, or if the sensor reports a decoded distance of -4. All options from [Sensor](https://esphome.io/components/sensor/#config-sensor).
+* **signal_strength** (*Optional*): Signal strength from 0 to 65535. It generally decreases with distance and with lower target reflectivity. The raw strength is still published when the distance is unavailable. All options from [Sensor](https://esphome.io/components/sensor/#config-sensor).
+* **temperature** (*Optional*): Internal sensor temperature in °C, not ambient room temperature. All options from [Sensor](https://esphome.io/components/sensor/#config-sensor).
 * **temperature** (*Optional*): Internal temperature in °C. It's not clear how useful this sensor because it certainly does not measure room temperature. All Options from [Sensor](https://esphome.io/components/sensor/#config-sensor).
 
 ## Development with VS Code Dev Containers
